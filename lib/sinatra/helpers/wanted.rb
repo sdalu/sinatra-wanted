@@ -19,6 +19,8 @@ module Sinatra::Helpers::Wanted
             @value = value
             @id    = id
         end
+        attr_reader :id
+        attr_reader :value
     end
 
     # Exception to notify of syntax error
