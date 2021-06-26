@@ -70,18 +70,16 @@ module Sinatra::Helpers::Wanted
     def want(param, type=nil, getter=nil, id: nil,
              default: nil, no_value: NO_VALUE,
              missing: :ignore, not_found: :ignore, &block)
-        error_handler do
             _want(param, type, getter, id: id,
                   default: default, no_value: no_value,
                   missing: missing, not_found: not_found, &block)
-        end
     end
     
     # (see #want)
     def want!(param, type=nil, getter=nil, id: nil,
               default: nil, no_value: NO_VALUE,
               missing: :raise, not_found: :raise, &block)
-        want(param, type, getter, id: id,
+        _want(param, type, getter, id: id,
              default: default, no_value: no_value,
              missing: missing, not_found: not_found, &block)
     end
@@ -90,7 +88,7 @@ module Sinatra::Helpers::Wanted
     def want?(param, type=nil, getter=nil, id: nil,
               default: nil, no_value: NO_VALUE,
               missing: :return, not_found: :ignore, &block)
-        want(param, type, getter,
+        _want(param, type, getter,
              default: default, id: id, no_value: no_value,
              missing: missing, not_found: not_found, &block)
     end
@@ -149,11 +147,12 @@ module Sinatra::Helpers::Wanted
             value = type.public_send(type_method, value) 
         end
         if !value.nil? && get_method
-            value = getter.public_send(get_method, value)
+            val    = value
+            value  = getter.public_send(get_method, value)
             # Check if we consider it as not found
             if value.nil?
                 case not_found
-                when :raise     then raise WantedNotFound, id: id
+                when :raise     then raise WantedNotFound, id: id, value: val
                 when :not_found then self.not_found
                 when :pass      then self.pass
                 when :ignore
@@ -167,20 +166,16 @@ module Sinatra::Helpers::Wanted
 
         # Return value
         value
-    rescue Dry::Types::CoercionError, Dry::Types::ConstraintError
-        raise WantedSyntaxError, value: value, id: id
-    end
 
-    def error_handler
+    rescue StandardError => e
         if defined?(Dry::Types)
-            begin
-                yield
-            rescue Dry::Types::CoercionError, Dry::Types::ConstraintError
+            case e
+            when Dry::Types::CoercionError, Dry::Types::ConstraintError
                 raise WantedSyntaxError, value: value, id: id
             end
-        else
-            yield
         end
+
+        raise
     end
    
 end
