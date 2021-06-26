@@ -25,14 +25,23 @@ module Sinatra::Helpers::Wanted
 
     # Exception to notify of syntax error
     class WantedSyntaxError < WantedError
+        def initialize(msg=nil, id: nil, value: nil)
+            super(msg || "syntax error", id: id, value: value)
+        end
     end
 
     # Exception to notify of missing parameter
     class WantedMissing < WantedError
+        def initialize(msg=nil, id: nil)
+            super(msg || "missing parameter", id: id)
+        end
     end
 
     # Exception to notify of object not found
     class WantedNotFound < WantedError
+        def initialize(msg=nil, id: nil, value: nil)
+            super(msg || "object not found", id: id, value: value)
+        end
     end
 
     
