@@ -5,8 +5,8 @@ require_relative 'wanted/version'
 module Sinatra::Helpers::Wanted
     # Define a "No Value" object.
     # It is used to signal that a parameter exists but as no associated value.
-    NO_VALUE = Object.new.then {|o|
-                   def o.insect
+    NO_VALUE = Object.new.tap {|o|
+                   def o.inspect
                        "No_Value"
                    end
                }.freeze
