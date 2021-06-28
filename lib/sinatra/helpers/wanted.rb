@@ -110,8 +110,8 @@ module Sinatra::Helpers::Wanted
                       end
         value, id   = if param.kind_of?(Symbol)
                           if params.include?(param)
-                          then [ params[param] || NO_VALUE, param ]
-                          else [ nil,                       param ]
+                          then [ params.fetch(param) { NO_VALUE }, param ]
+                          else [ nil,                              param ]
                           end
                       else
                           [ param, nil ]
