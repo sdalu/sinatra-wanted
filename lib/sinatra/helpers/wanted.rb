@@ -11,6 +11,9 @@ module Sinatra::Helpers::Wanted
                    end
                }.freeze
 
+    # List of exception that should be deal as Not Found
+    NotFoundList = []
+
     # Generic exception.
     # Only the inherited exceptions are raised.
     class WantedError < StandardError
@@ -144,14 +147,23 @@ module Sinatra::Helpers::Wanted
                 value = Dry::Types::Undefined
             end
         end
-        
+
         # Build value from various check/conversion
         if type_method
             value = type.public_send(type_method, value) 
         end
         if !value.nil? && get_method
             val    = value
-            value  = getter.public_send(get_method, value)
+            value  = if NotFoundList.empty?
+                         getter.public_send(get_method, value)
+                     else
+                         begin
+                             getter.public_send(get_method, value)
+                         rescue *NotFoundList
+                             nil
+                         end
+                     end
+
             # Check if we consider it as not found
             if value.nil?
                 case not_found
