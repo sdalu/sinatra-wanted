@@ -9,13 +9,9 @@ Gem::Specification.new do |s|
     s.description =  <<~EOF
       Ease processing of parameters in Sinatra framework.
       Integrates well with dry-types, sequel, ...
-
-      Example:
-        want! :user,    Dry::Types::String, User
-        want? :expired, Dry::Types::Params::Bool.default(true)
       EOF
 
-    s.homepage    = 'https://gitlab.com/sdalu/sinatra-wanted'
+    s.homepage    = 'https://github.com/sdalu/sinatra-wanted'
     s.license     = 'MIT'
 
     s.authors     = [ "Stéphane D'Alu" ]
